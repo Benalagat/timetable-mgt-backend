@@ -80,16 +80,11 @@ class TasksController extends Controller
         return response()->json($task);
     }
     public function updateone(Request $request, $id) {
-        $task = Task::where('id',$id)->get(); // Find the task with the given ID
-
-        $task->todo = $request['etodo']; // Update the 'etodo' field with the new value
-
+        var_dump($request->etodo);
+        $task = Task::find($id);
+        $task->todo = $request->etodo;
         $task->save();
-        return response()->json([
-            'message' =>"updated successfully",
-            'data' => $task
-        ]);
+        return response()->json($request->etodo);
     }
-
 
 }
