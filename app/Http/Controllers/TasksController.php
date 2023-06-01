@@ -84,7 +84,8 @@ class TasksController extends Controller
         $task = Task::find($id);
         $task->todo = $request->etodo;
         $task->save();
-        return response()->json($request->etodo);
+        $message = "Task updated successfully";
+        return response()->json('Task updated successfully');
     }
 
 }
