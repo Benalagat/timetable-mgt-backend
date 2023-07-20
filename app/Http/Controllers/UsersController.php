@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Mail\ResetPasswordMail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Spatie\Activitylog\Models\Activity;
 use Illuminate\Support\Facades\Validator;
 
@@ -214,6 +217,52 @@ class UsersController extends Controller
         return response([
             'status'=>'success',
             'user'=>$user
+        ]);
+    }
+    public function reset_password(Request $request){
+        $OTP=rand();
+        $email=$request->email;
+        $user=User::where('email','=',$email)->get()->first();
+        $user->otp=$OTP;
+        $user->update();
+       
+        $data = [
+            'subject' => 'Reset Password message',
+            'body' => 'Reset Password',
+            'otp' => $OTP
+        ];
+        if ($user){
+            try {
+                Mail::to($email)->send(new ResetPasswordMail($data));
+                return response()->json([
+                    'status'=>'success',
+                    'message'=>'Password reset sent successfully open your email account to reset your password'
+                ]);
+
+            }catch (Exception $th){
+                return response()->json([
+                    'status' =>'failed',
+                    'error'=>'Email does not exist'
+                ]);
+            }
+
+        }
+        else{
+            return response()->json([
+                'status'=>'fail',
+                'message'=>'Email not found'
+            ]);
+        }
+
+    }
+    public function change_password(Request $request,$id)
+    {
+        $user=User::where('otp','=',$id)->get()->first();
+        $user->password = Hash::make($request->password);
+        $user->update();
+        return response()->json([
+          'status'=>'success',
+          'message'=>'Password changed successfully'
         ]);
     }
 }

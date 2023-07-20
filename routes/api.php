@@ -60,7 +60,7 @@ Route::group(['middleware' => ['auth:sanctum']],function (){
      Route::get('getroles',[RolesController::class,'list']);
 
 
-     Route::post('addprojects',[ProjectsController::class,'store']);
+     Route::post('addprojects/{project_id?}',[ProjectsController::class,'store']);
      Route::get('getprojects',[ProjectsController::class,'listProjects']);
      Route::get('fetch_overview/{id}',[ProjectsController::class,'fetch_overview']);
 
@@ -74,6 +74,8 @@ Route::post('update-tasks/{id}',[TasksController::class,'updateone']);
 
 Route::post('register',[UsersController::class, 'store']);
 Route::post('login',[UsersController::class, 'login']);
+Route::post('reset_password',[UsersController::class, 'reset_password']);
+Route::post('change_password/{id}',[UsersController::class, 'change_password']);
 
 
 Route::post('tasks/{id}',[TasksController::class,'update']);
