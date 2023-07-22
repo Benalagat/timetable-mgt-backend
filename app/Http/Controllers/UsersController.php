@@ -42,7 +42,7 @@ class UsersController extends Controller
         $user->save();
 
         $token = $user->createToken('token')->plainTextToken;
-
+        saveLogs('store','desc','linux');
         return response()->json([
             'token' => $token,
             'status' => 'success',

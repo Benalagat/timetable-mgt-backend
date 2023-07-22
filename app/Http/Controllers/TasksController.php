@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use function PHPUnit\Framework\isNull;
 
+
 class TasksController extends Controller
 {
     public function store(Request $request)
@@ -29,6 +30,8 @@ class TasksController extends Controller
             ], 422);
 
         }
+        $user_id=Auth::user();
+        $user_id=$user_id->id;
         $todoId=$request->todo_id;
 //        echo $todoId;
 //        die();
@@ -38,8 +41,11 @@ class TasksController extends Controller
             $task->todo = $request->input('todo');
             $task->date = now()->format('j, n, Y');
             $task->time = now()->format('H:i');
-            $task->user_id = auth()->user()->id;
+            $task->user_id = $user_id;
             $task->save();
+
+            
+            LogActivity($user_id,$task->todo,'linux');
 
             return response()->json([
                 'status' => 'success',
@@ -50,6 +56,7 @@ class TasksController extends Controller
             $task=Task::find($todoId);
                 $task->todo = $request->input('todo');
                 $task->update();
+
                 return response()->json([
                     'status' => 'success',
                     'message' => 'Task Updated  successfully',
@@ -101,6 +108,7 @@ class TasksController extends Controller
         $todo=$request->etodo;
         $task->todo =$todo;
         $task->save();
+
         return response()->json([
             'message' =>"updated successfully",
             'data' => $task
